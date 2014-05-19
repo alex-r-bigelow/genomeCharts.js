@@ -1,0 +1,57 @@
+svg {
+	font: 10px'Gill Sans';
+}
+svg .histogramBar rect {
+	fill: black;
+	shape-rendering: crispEdges;
+}
+foreignObject {
+	shape-rendering: crispEdges;
+}
+canvas {
+	shape-rendering: crispEdges;
+}
+.shadow .ganttBar {
+	fill: black;
+	fill-opacity: 0.025;
+}
+.glyph {
+	fill: none;
+	stroke-width: 1.5;
+}
+.CFLAR.gubr .glyph {
+	stroke: #33a02c;
+}
+.CFLAR.ca .glyph {
+	stroke: #b2df8a;
+}
+.CASP10.gubr .glyph {
+	stroke: #1f78b4;
+}
+.CASP10.ca .glyph {
+	stroke: #a6cee3;
+}
+.CASP8.gubr .glyph {
+	stroke: #e31a1c;
+}
+.CASP8.ca .glyph {
+	stroke: #fb9a99;
+}
+
+svg .exon {
+	fill: black;
+	shape-rendering: crispEdges;
+}
+svg .centerLine {
+	fill: black;
+	shape-rendering: crispEdges;
+}
+svg text {
+	fill: #000;
+}
+svg .axis path,
+.axis line {
+	fill: none;
+	stroke: black;
+	shape-rendering: crispEdges;
+}

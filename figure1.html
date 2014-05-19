@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link type="text/css" rel="stylesheet" href="style.css" />
+	<script src="d3.v3.min.js"></script>
+	<script src="genomeCharts.js"></script>
+</head>
+
+<body>
+	<svg id="Figure1" xmlns="http://www.w3.org/2000/svg" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+		<g transform="translate(130,20)">
+			<g id="variants" transform="translate(0,0)" width="800" height="100"></g>
+			<g id="genes" transform="translate(0,100)" width="800" height="80"></g>
+			<g id="coverage" transform="translate(0,190)" width="800" height="60"></g>
+			<g id="xAxis" transform="translate(0,250)" width="800" height="40"></g>
+		</g>
+	</svg>
+
+
+	<script>
+		var width = document.getElementById('xAxis').getAttribute('width'),
+			domains = [
+				[201566128, 202566128]
+			],
+			ranges = [
+				[0, width]
+			];
+		d3.csv('all_variants.csv', function(csv) {
+			var values = [],
+				i;
+			for (i = 0; i < csv.length; i += 1) {
+				values.push(csv[i].position);
+			}
+			new Histogram(values, "variants", domains, ranges, "Total variants found", 200);
+		});
+		d3.json('genes.json', function(error, data) {
+			new GeneTrack(data, "genes", domains, ranges);
+		});
+		d3.csv('coverage.csv', function(csv) {
+			new CoverageChart(csv, "coverage", domains, ranges, "Average coverage", 600);
+		});
+		new Xaxis("xAxis", domains, ranges);
+	</script>
+</body>
+
+</html>
