@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link type="text/css" rel="stylesheet" href="style.css" />
+	<script src="d3.v3.min.js"></script>
+	<script src="genomeCharts.js"></script>
+</head>
+
+<body>
+	<svg id="Figure2">
+		<g transform="translate(120,20)">
+			<g id="dnase_mcf7_shadow" class="shadow" transform="translate(0,0)" width="800" height="600"></g>
+			<g id="dnase_hmec_shadow" class="shadow" transform="translate(0,0)" width="800" height="600"></g>
+			<g id="dnase_hmf_shadow" class="shadow" transform="translate(0,0)" width="800" height="600"></g>
+			<g id="dnase_mcf7_hypox_shadow" class="shadow" transform="translate(0,0)" width="800" height="600"></g>
+			<g id="dnase_nhdf_ad_shadow" class="shadow" transform="translate(0,0)" width="800" height="600"></g>
+			<g id="dnase_nhdf_neo_shadow" class="shadow" transform="translate(0,0)" width="800" height="600"></g>
+			<g id="dnase_t47d_shadow" class="shadow" transform="translate(0,0)" width="800" height="600"></g>
+			
+			<g id="risk_CFLAR_GU_BR" class="CFLAR gubr" transform="translate(0,0)" width="800" height="200"></g>
+			<g id="risk_CFLAR_CA" class="CFLAR ca" transform="translate(0,0)" width="800" height="200"></g>
+			<g id="risk_CASP10_GU_BR" class="CASP10 gubr" transform="translate(0,0)" width="800" height="200"></g>
+			<g id="risk_CASP10_CA" class="CASP10 ca" transform="translate(0,0)" width="800" height="200"></g>
+			<g id="risk_CASP8_GU_BR" class="CASP8 gubr" transform="translate(0,0)" width="800" height="200"></g>
+			<g id="risk_CASP8_CA" class="CASP8 ca" transform="translate(0,0)" width="800" height="200"></g>
+			
+			<g id="xAxis" transform="translate(0,200)" width="800" height="20"></g>
+			
+			<g id="genes" transform="translate(0,220)" width="800" height="80"></g>
+			
+			<g id="dnase_mcf7_main" class="main" transform="translate(0,290)" width="800" height="10"></g>
+			<g id="dnase_hmec_main" class="main" transform="translate(0,305)" width="800" height="10"></g>
+			<g id="dnase_hmf_main" class="main" transform="translate(0,320)" width="800" height="10"></g>
+			<g id="dnase_mcf7_hypox_main" class="main" transform="translate(0,335)" width="800" height="10"></g>
+			<g id="dnase_nhdf_ad_main" class="main" transform="translate(0,350)" width="800" height="10"></g>
+			<g id="dnase_nhdf_neo_main" class="main" transform="translate(0,365)" width="800" height="10"></g>
+			<g id="dnase_t47d_main" class="main" transform="translate(0,380)" width="800" height="10"></g>
+			
+			<g id="protective_CFLAR_GU_BR" class="CFLAR gubr" transform="translate(0,400)" width="800" height="200"></g>
+			<g id="protective_CFLAR_CA" class="CFLAR ca" transform="translate(0,400)" width="800" height="200"></g>
+			<g id="protective_CASP10_GU_BR" class="CASP10 gubr" transform="translate(0,400)" width="800" height="200"></g>
+			<g id="protective_CASP10_CA" class="CASP10 ca" transform="translate(0,400)" width="800" height="200"></g>
+			<g id="protective_CASP8_GU_BR" class="CASP8 gubr" transform="translate(0,400)" width="800" height="200"></g>
+			<g id="protective_CASP8_CA" class="CASP8 ca" transform="translate(0,400)" width="800" height="200"></g>
+			
+			<g id="xAxis2" transform="translate(0,600)" width="800" height="20"></g>
+		</g>
+	</svg>
+
+
+	<script>
+		var width = document.getElementById('xAxis').getAttribute('width'),
+			divide = 3/4,
+			gap = 1/16,
+			domains = [
+				[202090000, 202230000],
+				[202350000, null]
+			],
+			ranges = [
+				[0, (divide-gap/2)*width],
+				[(divide+gap/2)*width, width]
+			],
+			genes = ["CFLAR", "CASP10", "CASP8"],
+			dnase = ['hmec','hmf','mcf7','mcf7_hypox','nhdf_ad','nhdf_neo','t47d'],
+			firstGene = true;
+		// hack to make the scales consistent
+		domains[1][1] = (domains[0][1]-domains[0][0])*(1-divide-gap/2)/(divide-gap/2) + domains[1][0];
+		
+		GLYPH_RADIUS = 2;
+		
+		function drawLegend(container) {
+			var self = this,
+				offset = 40,
+				point;
+			
+			container.append("text")
+				.text("Risk variants")
+				.attr("text-anchor", "end")
+				.attr("transform", "translate(-" + LEGEND_PADDING + "," + offset + ")");
+			offset += 20;
+			
+			genes.forEach(function (g) {
+				point = container.append("g")
+					.attr("class", g + " ca")
+					.attr("transform", "translate(-" + (LEGEND_PADDING + 2) + "," + offset + ")");
+				drawCircle(point);
+				point.append("text")
+					.text(g + " CA")
+					.attr("text-anchor", "end")
+					.attr("transform", "translate(-7,3)");
+				offset += 20;
+				point = container.append("g")
+					.attr("class", g + " gubr")
+					.attr("transform", "translate(-" + (LEGEND_PADDING + 2) + "," + offset + ")");
+				drawCircle(point);
+				point.append("text")
+					.text(g + " GU+BR")
+					.attr("text-anchor", "end")
+					.attr("transform", "translate(-7,3)");
+				offset += 20;
+			});
+		}
+		
+		genes.forEach(function (g) {
+			if (firstGene === true) {
+				firstGene = false;
+				d3.csv('log10.csv', function(csv) {
+					new MinusLog10Plot(csv, "risk_" + g + "_GU_BR", domains, ranges, drawLegend, "risk", g + "_GU_BR", drawCircle);
+				});
+				d3.csv('log10.csv', function(csv) {
+					new MinusLog10Plot(csv, "protective_" + g + "_GU_BR", domains, ranges, "Protective variants", "protective", g + "_GU_BR", drawCircle);
+				});
+			} else {
+				d3.csv('log10.csv', function(csv) {
+					new MinusLog10Plot(csv, "risk_" + g + "_GU_BR", domains, ranges, null, "risk", g + "_GU_BR", drawCircle, true);
+				});
+				d3.csv('log10.csv', function(csv) {
+					new MinusLog10Plot(csv, "protective_" + g + "_GU_BR", domains, ranges, null, "protective", g + "_GU_BR", drawCircle, true);
+				});
+			}
+			
+			d3.csv('log10.csv', function(csv) {
+				new MinusLog10Plot(csv, "risk_" + g + "_CA", domains, ranges, null, "risk", g + "_CA", drawCircle, true);
+			});
+			d3.csv('log10.csv', function(csv) {
+				new MinusLog10Plot(csv, "protective_" + g + "_CA", domains, ranges, null, "protective", g + "_CA", drawCircle, true);
+			});
+		});
+		
+		dnase.forEach(function (d) {
+			d3.csv('dnase_' + d + '.csv', function(csv) {
+				new GanttChart(csv, "dnase_" + d + "_shadow", domains, ranges);
+				new GanttChart(csv, "dnase_" + d + "_main", domains, ranges, d);
+			});
+		});
+		d3.json('genes.json', function(error, data) {
+			new GeneTrack(data, "genes", domains, ranges);
+		});
+		new Xaxis("xAxis", domains, ranges);
+		new Xaxis("xAxis2", domains, ranges);
+	</script>
+</body>
+
+</html>
